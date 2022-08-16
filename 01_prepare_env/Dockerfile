@@ -1,9 +1,11 @@
-# pythonのイメージを取得
+# pythonのイメージ（用意されている環境みたいなもの）を取得
 FROM python:3
 
-# dockerイメージ内にbuildディレクトリを作成。ローカルのコードをbuild/に反映。
+# dockerイメージ内にbuildディレクトリを作成。
 RUN mkdir /build
+# ローカルのコードを/buildに反映
 COPY . /build/
+# 作業ディレクトリを/buildに移動 -> dockerが立ち上がったら、/build/パスから始まる。
 WORKDIR /build/
 
 # Ubuntuシステムの更新系
