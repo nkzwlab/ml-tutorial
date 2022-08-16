@@ -8,15 +8,11 @@ dockerを使ってpythonの環境構築を行います。<br>
 - GPU上にも同じ環境をすぐ作れる！
 
 ## 使い方
-1. 01_prepare_envディレクトリに移動
-```
-$ cd 01_prepare_env
-```
-2. dockerで環境構築
+1. dockerで環境構築
 ```
 $ make init
 ```
-3. pythonのコマンド実行
+2. pythonのコマンド実行
 ```
 $ make run
 
