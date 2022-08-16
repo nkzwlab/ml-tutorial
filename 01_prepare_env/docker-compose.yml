@@ -1,0 +1,8 @@
+version: '3'
+services:
+  prepare-env:
+    build: .
+    container_name: 'prepare-env'
+    tty: true
+    volumes: # Dockerコンテナ内で作成したデータの永続化。ローカルのコードと繋げているイメージでもOK
+      - ./src:/build/src
