@@ -1,0 +1,10 @@
+version: '3'
+services:
+  prepare-env:
+    build: # コンテナを作成する時に使用するDockerfileの指定。
+      context: .
+      dockerfile: Dockerfile
+    container_name: 'prepare-env' # コンテナの名前
+    tty: true # Dockerコンテナを起動した時に、起動しっぱなしにする。
+    volumes: # Dockerコンテナ内で作成したデータの永続化。ローカルのコードと繋げているイメージでもOK
+      - ./src:/build/src
