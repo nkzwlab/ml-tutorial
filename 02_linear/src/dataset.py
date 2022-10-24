@@ -1,5 +1,6 @@
 import torch
 import torch.utils.data as data
+import torch.nn.functional as F
 from sklearn.datasets import load_iris
 import pandas as pd
 
@@ -14,8 +15,9 @@ class IrisDataset(data.Dataset):
     def __getitem__(self, idx):
         feature = torch.FloatTensor(self.features[idx])
         label = torch.LongTensor(self.labels[idx])
+        onehot_label = F.one_hot(label, num_classes=3).squeeze().to(torch.float16)
 
-        return feature, label
+        return feature, onehot_label
 
 def get_iris_dataset():
     iris = load_iris()
@@ -29,7 +31,6 @@ def get_iris_dataset():
 
     df['labels'] = iris.target_names[iris.target]
     df['labels'] = df['labels'].map(label_nums)
-    print(df)
 
     features = ['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)']
     labels = ['labels']
