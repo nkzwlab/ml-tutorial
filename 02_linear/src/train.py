@@ -45,7 +45,7 @@ def train():
 
         if epoch % save_epoch == 0:
             torch.save(net.state_dict(), os.path.join(
-                model_path, 'net-{}.ckpt'.format(epoch)
+                model_path, 'net-{}.pth'.format(epoch)
             ))
 
 if __name__ == '__main__':
