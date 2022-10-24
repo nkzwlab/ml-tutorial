@@ -40,11 +40,10 @@ def train():
             loss.backward()
             optimizer.step()
 
-        print(epoch)
         if epoch % log_epoch == 0:
             print('Epoch: [{}/{}], Loss: {:.4f}'.format(epoch, epochs, loss.item()))
 
-        if epoch+1 % save_epoch == 0:
+        if epoch % save_epoch == 0:
             torch.save(net.state_dict(), os.path.join(
                 model_path, 'net-{}.ckpt'.format(epoch)
             ))

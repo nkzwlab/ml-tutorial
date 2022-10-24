@@ -1,4 +1,4 @@
-from turtle import forward
+from torchinfo import summary
 import torch.nn as nn
 
 class Net(nn.Module):
@@ -14,3 +14,9 @@ class Net(nn.Module):
         x = self.fc2(x)
 
         return x
+
+if __name__ == '__main__':
+    net = Net()
+
+    batch_size = 5
+    summary(net, input_size=(batch_size, 4))
