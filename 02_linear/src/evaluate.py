@@ -2,12 +2,22 @@ from model import Net
 import torch
 from dataset import get_iris_dataset
 
-def evaluate(data_loader, device):
+def evaluate(dataset, model_path):
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    batch_size = 10
+    shuffle = True
+
     with torch.no_grad():
         accs = []
 
         net = Net()
-        net.load_state_dict(torch.load('models/net-30.pth'))
+        net.load_state_dict(torch.load(model_path))
+
+        data_loader = torch.utils.data.DataLoader(
+            dataset=dataset,
+            batch_size=batch_size,
+            shuffle=shuffle
+        )
 
         for batch in data_loader:
             x, y = batch
@@ -24,18 +34,13 @@ def evaluate(data_loader, device):
     print('Accuracy: {:.1f}%'.format(average_acc * 100))
 
 if __name__ == '__main__':
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model_path = 'models/'
-    epochs = 30
-    log_epoch = 5
-    save_epoch = 10
-    batch_size = 10
-    shuffle = True
-
     dataset = get_iris_dataset()
-    data_loader = torch.utils.data.DataLoader(
-        dataset=dataset,
-        batch_size=batch_size,
-        shuffle=shuffle
-    )
-    evaluate(data_loader, device)
+
+    model_paths = [
+        'models/net-10.pth',
+        'models/net-20.pth',
+        'models/net-30.pth',
+    ]
+
+    for path in model_paths:
+        evaluate(dataset, path)

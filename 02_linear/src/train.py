@@ -4,7 +4,7 @@ import torch.nn as nn
 from dataset import get_iris_dataset
 from model import Net
 
-def train():
+def train(dataset):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model_path = 'models/'
     epochs = 30
@@ -16,7 +16,6 @@ def train():
     if not os.path.exists(model_path):
         os.makedirs(model_path)
 
-    dataset = get_iris_dataset()
     data_loader = torch.utils.data.DataLoader(
         dataset=dataset,
         batch_size=batch_size,
@@ -49,4 +48,5 @@ def train():
             ))
 
 if __name__ == '__main__':
-    train()
+    dataset = get_iris_dataset()
+    train(dataset)
