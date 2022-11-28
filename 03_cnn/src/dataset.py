@@ -1,9 +1,4 @@
-import torch
 import torchvision
-import torch.utils.data as data
-import torch.nn.functional as F
-from sklearn.datasets import load_iris
-import pandas as pd
 
 def get_mnist_dataset():
     trans = torchvision.transforms.Compose(

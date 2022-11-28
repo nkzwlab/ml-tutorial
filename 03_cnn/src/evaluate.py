@@ -1,11 +1,15 @@
 from model import Net
 import torch
-from dataset import get_iris_dataset
+import torch.nn as nn
+from dataset import get_mnist_dataset
+import statistics
 
 def evaluate(dataset, model_path):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    batch_size = 10
+    batch_size = 256
     shuffle = True
+
+    criterion = nn.CrossEntropyLoss()
 
     with torch.no_grad():
         accs = []
@@ -19,28 +23,34 @@ def evaluate(dataset, model_path):
             shuffle=shuffle
         )
 
-        for batch in data_loader:
-            x, y = batch
-            x = x.to(device)
-            y = torch.argmax(y.to(device), dim=1)
-            predict = net(x)
+        losses = []
+        accs = []
+        for images, labels in data_loader:
+            images, labels = images.to(device), labels.to(device)
 
-            predict = torch.argmax(predict, dim=1)
+            outputs = net(images)
+            loss = criterion(outputs, labels)
+            losses.append(loss.item())
 
-            acc = torch.sum(predict == y) / len(y)
+            _, predicts = outputs.max(1)
+            
+            acc = torch.sum(predicts == labels) / len(labels)
             accs.append(acc)
 
+    average_loss = statistics.mean(losses)
     average_acc = torch.tensor(accs).mean()
+    print('Loss: {:.3f}'.format(average_loss))
     print('Accuracy: {:.1f}%'.format(average_acc * 100))
 
 if __name__ == '__main__':
-    dataset = get_iris_dataset()
+    _, test_dataset = get_mnist_dataset()
 
     model_paths = [
+        'models/net-1.pth',
+        'models/net-5.pth',
         'models/net-10.pth',
-        'models/net-20.pth',
-        'models/net-30.pth',
     ]
 
     for path in model_paths:
-        evaluate(dataset, path)
+        print(path)
+        evaluate(test_dataset, path)
