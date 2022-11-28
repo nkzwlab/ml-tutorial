@@ -1,56 +1,25 @@
 import torch
+import torchvision
 import torch.utils.data as data
 import torch.nn.functional as F
 from sklearn.datasets import load_iris
 import pandas as pd
 
-class IrisDataset(data.Dataset):
-    def __init__(self, df, features, labels):
-        self.features = df[features].values
-        self.labels = df[labels].values
+def get_mnist_dataset():
+    trans = torchvision.transforms.Compose(
+        [
+            torchvision.transforms.ToTensor(),
+            torchvision.transforms.Normalize((0.5,), (0.5,))
+        ]
+    )
+    train_dataset = torchvision.datasets.MNIST(root = 'data', train = True, download = True, transform = trans)
+    test_dataset = torchvision.datasets.MNIST(root = 'data', train = False, download = True, transform = trans)
 
-    def __len__(self):
-        return len(self.features)
-
-    def __getitem__(self, idx):
-        feature = torch.FloatTensor(self.features[idx])
-        label = torch.LongTensor(self.labels[idx])
-        onehot_label = F.one_hot(label, num_classes=3).squeeze().to(torch.float16)
-
-        return feature, onehot_label
-
-def get_iris_dataset():
-    iris = load_iris()
-    df = pd.DataFrame(iris.data, columns=iris.feature_names)
-
-    label_nums = {
-        'setosa': 0,
-        'versicolor': 1,
-        'virginica': 2,
-    }
-
-    df['labels'] = iris.target_names[iris.target]
-    df['labels'] = df['labels'].map(label_nums)
-
-    features = ['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)']
-    labels = ['labels']
-
-    return IrisDataset(df, features, labels)
+    return train_dataset, test_dataset
 
 if __name__ == '__main__':
-    iris = load_iris()
-    df = pd.DataFrame(iris.data, columns=iris.feature_names)
+    train_dataset, test_dataset = get_mnist_dataset()
 
-    label_nums = {
-        'setosa': 0,
-        'versicolor': 1,
-        'virginica': 2,
-    }
-
-    df['labels'] = iris.target_names[iris.target]
-    df['labels'] = df['labels'].map(label_nums)
-    print(df)
-
-    dataset = get_iris_dataset()
-    print(len(dataset))
-    print(dataset[0])
+    print(train_dataset)
+    print('========================')
+    print(test_dataset)
