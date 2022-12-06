@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 from dataset import get_mnist_dataset
 from model import Net
+import torch.nn.functional as F
 
 def train(dataset):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -13,6 +14,10 @@ def train(dataset):
     batch_size = 256
     shuffle = True
 
+    x_dim = 28*28
+    h_dim = 400
+    z_dim = 20
+
     if not os.path.exists(model_path):
         os.makedirs(model_path)
 
@@ -22,10 +27,9 @@ def train(dataset):
         shuffle=shuffle
     )
 
-    net = Net()
+    net = Net(x_dim=x_dim, h_dim=h_dim, z_dim=z_dim).to(device)
     net.to(device)
 
-    criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(net.parameters(), lr=1e-4)
     scheduler = torch.optim.lr_scheduler.ExponentialLR(
         optimizer=optimizer,
@@ -33,12 +37,16 @@ def train(dataset):
     )
 
     for epoch in range(1, epochs+1):
-        for i, (images, labels) in enumerate(data_loader):
-            images, labels = images.to(device), labels.to(device)
+        for i, (images, _) in enumerate(data_loader):
+            images = images.to(device).view(-1, x_dim)
 
-            outputs = net(images)
+            reconstruct, mean, log_var = net(images)
 
-            loss = criterion(outputs, labels)
+            reconst_loss = F.binary_cross_entropy(reconstruct, images)
+            kl_div = -0.5 * torch.sum(1 + log_var - mean.pow(2) - log_var.exp())
+
+            loss = reconst_loss + kl_div
+
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()

@@ -5,10 +5,10 @@ init:
 	docker-compose up -d
 
 run-cmd:
-	docker-compose exec cnn python -B ${filename}
+	docker-compose exec vae python -B ${filename}
 
 down:
 	docker-compose down
 
 install:
-	docker-compose exec cnn pip install -r requirements.txt
+	docker-compose exec vae pip install -r requirements.txt
