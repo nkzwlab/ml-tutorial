@@ -1,0 +1,12 @@
+version: '3'
+services:
+  cnn:
+    environment:
+      PYTHONPATH: src/
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: 'cnn'
+    tty: true
+    volumes:
+      - .:/build/
