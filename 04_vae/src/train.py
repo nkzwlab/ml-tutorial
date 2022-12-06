@@ -8,10 +8,10 @@ import torch.nn.functional as F
 def train(dataset):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model_path = 'models/'
-    epochs = 10
+    epochs = 50
     save_step = 100
     save_epoch = 1
-    batch_size = 256
+    batch_size = 128
     shuffle = True
 
     x_dim = 28*28
@@ -30,7 +30,7 @@ def train(dataset):
     net = Net(x_dim=x_dim, h_dim=h_dim, z_dim=z_dim).to(device)
     net.to(device)
 
-    optimizer = torch.optim.Adam(net.parameters(), lr=1e-4)
+    optimizer = torch.optim.Adam(net.parameters(), lr=1e-3)
     scheduler = torch.optim.lr_scheduler.ExponentialLR(
         optimizer=optimizer,
         gamma=0.95

@@ -2,19 +2,22 @@ from model import Net
 import torch
 import torch.nn as nn
 from dataset import get_mnist_dataset
-import statistics
+import matplotlib.pyplot as plt
 
 def evaluate(dataset, model_path):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    batch_size = 256
+    batch_size = 128
     shuffle = True
 
-    criterion = nn.CrossEntropyLoss()
+    x_dim = 28*28
+    h_dim = 400
+    z_dim = 20
+
+    fig = plt.figure(figsize=(20, 6))
 
     with torch.no_grad():
-        accs = []
 
-        net = Net()
+        net = Net(x_dim=x_dim, h_dim=h_dim, z_dim=z_dim)
         net.load_state_dict(torch.load(model_path))
 
         data_loader = torch.utils.data.DataLoader(
@@ -23,32 +26,32 @@ def evaluate(dataset, model_path):
             shuffle=shuffle
         )
 
-        losses = []
-        accs = []
-        for images, labels in data_loader:
-            images, labels = images.to(device), labels.to(device)
+        for i, (images, _) in enumerate(data_loader):
+            if i > 0: break
 
-            outputs = net(images)
-            loss = criterion(outputs, labels)
-            losses.append(loss.item())
+            for i, im in enumerate(images.view(-1, 28, 28).detach().numpy()[:10]):
+                ax = fig.add_subplot(3, 10, i+1)
+                ax.imshow(im, 'gray')
+                plt.savefig("original.png")
 
-            _, predicts = outputs.max(1)
+            images = images.to(device).view(-1, x_dim)
 
-            acc = torch.sum(predicts == labels) / len(labels)
-            accs.append(acc)
+            reconstruct, _, _ = net(images)
 
-    average_loss = statistics.mean(losses)
-    average_acc = torch.tensor(accs).mean()
-    print('Loss: {:.3f}'.format(average_loss))
-    print('Accuracy: {:.1f}%'.format(average_acc * 100))
+            for i, im in enumerate(reconstruct.view(-1, 28, 28).detach().numpy()[:10]):
+                ax = fig.add_subplot(3, 10, i+1)
+                ax.imshow(im, 'gray')
+                plt.savefig("reconstruct.png")
+
 
 if __name__ == '__main__':
     _, test_dataset = get_mnist_dataset()
 
     model_paths = [
-        'models/net-1.pth',
-        'models/net-5.pth',
-        'models/net-10.pth',
+        # 'models/net-1.pth',
+        # 'models/net-5.pth',
+        # 'models/net-10.pth',
+        'models/net-30.pth',
     ]
 
     for path in model_paths:

@@ -6,16 +6,19 @@ import torch.nn.functional as F
 class Net(nn.Module):
     def __init__(self, x_dim, h_dim, z_dim):
         super(Net, self).__init__()
-        self.enc1 = nn.Linear(x_dim, h_dim)
+        self.enc1 = nn.Linear(x_dim, h_dim*3)
+        self.enc2 = nn.Linear(h_dim*3, h_dim)
 
         self.mean = nn.Linear(h_dim, z_dim)
         self.log_var = nn.Linear(h_dim, z_dim)
 
-        self.dec1 = nn.Linear(z_dim, h_dim)
-        self.dec2 = nn.Linear(h_dim, x_dim)
+        self.dec1 = nn.Linear(z_dim, h_dim*3)
+        self.dec2 = nn.Linear(h_dim*3, h_dim)
+        self.dec3 = nn.Linear(h_dim, x_dim)
 
     def encode(self, x):
         x = F.relu(self.enc1(x))
+        x = F.relu(self.enc2(x))
         mean = self.mean(x)
         log_var = self.log_var(x)
 
@@ -29,7 +32,8 @@ class Net(nn.Module):
 
     def decode(self, z):
         y = F.relu(self.dec1(z))
-        y = torch.sigmoid(self.dec2(y))
+        y = F.relu(self.dec2(y))
+        y = torch.sigmoid(self.dec3(y))
 
         return y
 
