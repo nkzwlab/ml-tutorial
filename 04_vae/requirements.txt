@@ -1,0 +1,8 @@
+torch==1.12.0
+torchvision
+scikit-learn
+seaborn
+pandas
+torchinfo
+statistics
+matplotlib

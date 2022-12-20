@@ -1,0 +1,12 @@
+version: '3'
+services:
+  vae:
+    environment:
+      PYTHONPATH: src/
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: 'vae'
+    tty: true
+    volumes:
+      - .:/build/
