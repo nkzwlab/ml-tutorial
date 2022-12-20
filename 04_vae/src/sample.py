@@ -7,6 +7,7 @@ import torch.nn.functional as F
 from torch import optim
 import torch.utils as utils
 from torchvision import datasets, transforms
+import os
 
 warnings.simplefilter('ignore')
 
@@ -85,3 +86,7 @@ for i in range(epoch):
         losses.append(loss.detach().numpy())
     loss_list.append(np.average(losses))
     print(f"Epoch: {i}, loss: {np.average(losses)}")
+
+    torch.save(vae.state_dict(), os.path.join(
+                'sample/', 'net-{}.pth'.format(epoch)
+            ))

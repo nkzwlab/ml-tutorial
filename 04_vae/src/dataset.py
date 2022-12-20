@@ -4,9 +4,12 @@ def get_mnist_dataset():
     trans = torchvision.transforms.Compose(
         [
             torchvision.transforms.ToTensor(),
-            torchvision.transforms.Normalize((0.5,), (0.5,))
+            # torchvision.transforms.Normalize((0.5,), (0.5,))
         ]
     )
+
+    trans = torchvision.transforms.ToTensor()
+
     train_dataset = torchvision.datasets.MNIST(root = 'data', train = True, download = True, transform = trans)
     test_dataset = torchvision.datasets.MNIST(root = 'data', train = False, download = True, transform = trans)
 
